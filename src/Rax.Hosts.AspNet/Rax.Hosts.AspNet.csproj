@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{CEBFBAEC-A110-4AAF-A9A7-A9B2B78EA501}</ProjectGuid>
+    <ProjectGuid>{B32A7B5A-253C-438F-A8BE-61724AA1A010}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Rax.Specs</RootNamespace>
-    <AssemblyName>Rax.Specs</AssemblyName>
+    <RootNamespace>Rax.Hosts.AspNet</RootNamespace>
+    <AssemblyName>Rax.Hosts.AspNet</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -40,7 +40,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Rax.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
