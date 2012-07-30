@@ -7,6 +7,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rax.Hosts.AspNet", "Rax.Hos
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hosts", "Hosts", "{20E337FE-B094-4933-925C-CB432D1483CD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Middlewares", "Middlewares", "{A590B603-6291-47EE-949F-3035A0F40730}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{905FAFD5-8242-497A-8C4D-8CBFD11CF6E2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Providers", "Providers", "{053923BD-F551-42F8-B91D-7AE12F39E0C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rax.Providers.RaxSampleProviderApp", "Rax.Providers.RaxSampleProviderApp\Rax.Providers.RaxSampleProviderApp.csproj", "{3A1078ED-ECFA-4625-934A-450F161E2004}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,11 +29,16 @@ Global
 		{B32A7B5A-253C-438F-A8BE-61724AA1A010}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B32A7B5A-253C-438F-A8BE-61724AA1A010}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B32A7B5A-253C-438F-A8BE-61724AA1A010}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A1078ED-ECFA-4625-934A-450F161E2004}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A1078ED-ECFA-4625-934A-450F161E2004}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A1078ED-ECFA-4625-934A-450F161E2004}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A1078ED-ECFA-4625-934A-450F161E2004}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B32A7B5A-253C-438F-A8BE-61724AA1A010} = {20E337FE-B094-4933-925C-CB432D1483CD}
+		{3A1078ED-ECFA-4625-934A-450F161E2004} = {053923BD-F551-42F8-B91D-7AE12F39E0C7}
 	EndGlobalSection
 EndGlobal
