@@ -1,401 +1,225 @@
-﻿#define RAX_DYNAMIC
-
+﻿
 namespace Rax.Providers.RaxSampleProviderApp
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-#if RAX_DYNAMIC
-    using System.Dynamic;
-#endif
+    using System.Linq;
 
-    /// <summary>
-    /// Represents the json array.
-    /// </summary>
-    [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
-    public class DynamicArray : List<object>
+    // Specification for Rax
+
+    // using Request = IDictionary<string, object>;
+    // using Response = IDictionary<string, object>;
+    // using Next = Action<Exception>;
+    // using MiddleWare = Func<Request, Response, Next, Task>;
+    // using Host = IDictionary<string, object>;
+    // using HostRunner =  System.Action<Host, IEnumerable<Middleware>>;
+    using System.Threading.Tasks;
+    using RaxRequest = System.Collections.Generic.IDictionary<string, object>;
+    using RaxResponse = System.Collections.Generic.IDictionary<string, object>;
+    using RaxNext = System.Action<System.Exception>;
+
+    using RaxMiddleware = System.Func<
+        System.Collections.Generic.IDictionary<string, object> /* request */,
+        System.Collections.Generic.IDictionary<string, object> /* response */,
+        System.Action<System.Exception> /* next */,
+        System.Threading.Tasks.Task>;
+
+    using RaxHost = System.Collections.Generic.IDictionary<string, object>;
+
+    using RaxHostRunner = System.Action<
+        System.Collections.Generic.IDictionary<string, object> /* host */,
+        System.Collections.Generic.IEnumerable< /* middleware */
+            System.Func<
+                System.Collections.Generic.IDictionary<string, object> /* request */,
+                System.Collections.Generic.IDictionary<string, object> /* response */,
+                System.Action<System.Exception> /* next */,
+                System.Threading.Tasks.Task>
+        >
+    >;
+
+    public class RaxSampleProviderApp : IEnumerable<RaxMiddleware>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DynamicArray"/> class. 
-        /// </summary>
-        public DynamicArray() { }
+        private readonly IList<RaxMiddleware> _middlewares;
+        private readonly IList<RaxMiddleware> _routes = new List<RaxMiddleware>();
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DynamicArray"/> class. 
-        /// </summary>
-        /// <param name="capacity">The capacity of the json array.</param>
-        public DynamicArray(int capacity) : base(capacity) { }
-
-        /// <summary>
-        /// The json representation of the array.
-        /// </summary>
-        /// <returns>The json representation of the array.</returns>
-        public override string ToString()
+        public RaxSampleProviderApp()
         {
-            //return SimpleJson.SerializeObject(this) ?? string.Empty;
-            return base.ToString();
-        }
-    }
-
-    /// <summary>
-    /// Represents the json object.
-    /// </summary>
-    [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
-    public class DynamicDictionary :
-#if RAX_DYNAMIC
- DynamicObject,
-#endif
- IDictionary<string, object>
-    {
-        /// <summary>
-        /// The internal member dictionary.
-        /// </summary>
-        private readonly Dictionary<string, object> _members = new Dictionary<string, object>();
-
-        /// <summary>
-        /// Gets the <see cref="System.Object"/> at the specified index.
-        /// </summary>
-        /// <value></value>
-        public object this[int index]
-        {
-            get { return GetAtIndex(_members, index); }
+            _middlewares = new List<RaxMiddleware>();
         }
 
-        internal static object GetAtIndex(IDictionary<string, object> obj, int index)
+        public RaxSampleProviderApp(IEnumerable<RaxMiddleware> middlewares)
         {
-            if (obj == null)
-                throw new ArgumentNullException("obj");
+            if (middlewares == null)
+                throw new ArgumentNullException("middlewares");
 
-            if (index >= obj.Count)
-                throw new ArgumentOutOfRangeException("index");
-
-            int i = 0;
-            foreach (KeyValuePair<string, object> o in obj)
-                if (i++ == index) return o.Value;
-
-            return null;
+            _middlewares = middlewares.ToList();
         }
 
-        /// <summary>
-        /// Adds the specified key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        public void Add(string key, object value)
+        public IEnumerator<RaxMiddleware> GetEnumerator()
         {
-            _members.Add(key, value);
+            return _middlewares.GetEnumerator();
         }
 
-        /// <summary>
-        /// Determines whether the specified key contains key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns>
-        /// 	<c>true</c> if the specified key contains key; otherwise, <c>false</c>.
-        /// </returns>
-        public bool ContainsKey(string key)
-        {
-            return _members.ContainsKey(key);
-        }
-
-        /// <summary>
-        /// Gets the keys.
-        /// </summary>
-        /// <value>The keys.</value>
-        public ICollection<string> Keys
-        {
-            get { return _members.Keys; }
-        }
-
-        /// <summary>
-        /// Removes the specified key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns></returns>
-        public bool Remove(string key)
-        {
-            return _members.Remove(key);
-        }
-
-        /// <summary>
-        /// Tries the get value.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        /// <returns></returns>
-        public bool TryGetValue(string key, out object value)
-        {
-            return _members.TryGetValue(key, out value);
-        }
-
-        /// <summary>
-        /// Gets the values.
-        /// </summary>
-        /// <value>The values.</value>
-        public ICollection<object> Values
-        {
-            get { return _members.Values; }
-        }
-
-        /// <summary>
-        /// Gets or sets the <see cref="System.Object"/> with the specified key.
-        /// </summary>
-        /// <value></value>
-        public object this[string key]
-        {
-            get { return _members[key]; }
-            set { _members[key] = value; }
-        }
-
-        /// <summary>
-        /// Adds the specified item.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        public void Add(KeyValuePair<string, object> item)
-        {
-            _members.Add(item.Key, item.Value);
-        }
-
-        /// <summary>
-        /// Clears this instance.
-        /// </summary>
-        public void Clear()
-        {
-            _members.Clear();
-        }
-
-        /// <summary>
-        /// Determines whether [contains] [the specified item].
-        /// </summary>
-        /// <param name="item">The item.</param>
-        /// <returns>
-        /// 	<c>true</c> if [contains] [the specified item]; otherwise, <c>false</c>.
-        /// </returns>
-        public bool Contains(KeyValuePair<string, object> item)
-        {
-            return _members.ContainsKey(item.Key) && _members[item.Key] == item.Value;
-        }
-
-        /// <summary>
-        /// Copies to.
-        /// </summary>
-        /// <param name="array">The array.</param>
-        /// <param name="arrayIndex">Index of the array.</param>
-        public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
-        {
-            int num = Count;
-            foreach (KeyValuePair<string, object> kvp in this)
-            {
-                array[arrayIndex++] = kvp;
-
-                if (--num <= 0)
-                    return;
-            }
-        }
-
-        /// <summary>
-        /// Gets the count.
-        /// </summary>
-        /// <value>The count.</value>
-        public int Count
-        {
-            get { return _members.Count; }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance is read only.
-        /// </summary>
-        /// <value>
-        /// 	<c>true</c> if this instance is read only; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
-
-        /// <summary>
-        /// Removes the specified item.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        /// <returns></returns>
-        public bool Remove(KeyValuePair<string, object> item)
-        {
-            return _members.Remove(item.Key);
-        }
-
-        /// <summary>
-        /// Gets the enumerator.
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
-        {
-            return _members.GetEnumerator();
-        }
-
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>
-        /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
-        /// </returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return _members.GetEnumerator();
+            return GetEnumerator();
         }
 
-        /// <summary>
-        /// Returns a json <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
-        /// </summary>
-        /// <returns>
-        /// A json <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
-        /// </returns>
-        public override string ToString()
+        public static RaxRequest CreateRequest()
         {
-            //return SimpleJson.SerializeObject(this);
-            return base.ToString();
+            return new Request();
         }
 
-#if RAX_DYNAMIC
-        /// <summary>
-        /// Provides implementation for type conversion operations. Classes derived from the <see cref="T:System.Dynamic.DynamicObject"/> class can override this method to specify dynamic behavior for operations that convert an object from one type to another.
-        /// </summary>
-        /// <param name="binder">Provides information about the conversion operation. The binder.Type property provides the type to which the object must be converted. For example, for the statement (String)sampleObject in C# (CType(sampleObject, Type) in Visual Basic), where sampleObject is an instance of the class derived from the <see cref="T:System.Dynamic.DynamicObject"/> class, binder.Type returns the <see cref="T:System.String"/> type. The binder.Explicit property provides information about the kind of conversion that occurs. It returns true for explicit conversion and false for implicit conversion.</param>
-        /// <param name="result">The result of the type conversion operation.</param>
-        /// <returns>
-        /// Alwasy returns true.
-        /// </returns>
-        public override bool TryConvert(ConvertBinder binder, out object result)
+        public static RaxResponse CreateResponse()
         {
-            // <pex>
-            if (binder == (ConvertBinder)null)
-                throw new ArgumentNullException("binder");
-            // </pex>
-            Type targetType = binder.Type;
+            return new Response();
+        }
 
-            if ((targetType == typeof(IEnumerable)) ||
-                (targetType == typeof(IEnumerable<KeyValuePair<string, object>>)) ||
-                (targetType == typeof(IDictionary<string, object>)) ||
-#if NETFX_CORE
- (targetType == typeof(IDictionary<,>))
-#else
- (targetType == typeof(IDictionary))
-#endif
-)
+        public Task Listen(RaxHost host)
+        {
+            if (host == null)
+                throw new ArgumentNullException("host");
+
+            var tcs = new TaskCompletionSource<object>();
+
+            object runner;
+            if (host.TryGetValue("Start", out runner))
             {
-                result = this;
-                return true;
+                var hostRunner = runner as Func<IEnumerable<RaxMiddleware>, Task>;
+                if (hostRunner == null)
+                    throw new ApplicationException("Don't know how to run on the host (Invalid host.Start)");
+
+                hostRunner(_middlewares)
+                    .ContinueWith(t =>
+                                  {
+                                      if (t.IsFaulted) tcs.TrySetException(t.Exception);
+                                      else if (t.IsCanceled) tcs.TrySetCanceled();
+                                      else tcs.TrySetResult(null);
+                                  });
+            }
+            else
+            {
+                throw new ApplicationException("Don't know how to start the host (host.Start not found)");
             }
 
-            return base.TryConvert(binder, out result);
+            return tcs.Task;
         }
 
-        /// <summary>
-        /// Provides the implementation for operations that delete an object member. This method is not intended for use in C# or Visual Basic.
-        /// </summary>
-        /// <param name="binder">Provides information about the deletion.</param>
-        /// <returns>
-        /// Alwasy returns true.
-        /// </returns>
-        public override bool TryDeleteMember(DeleteMemberBinder binder)
+        public void Use(RaxMiddleware middleware)
         {
-            // <pex>
-            if (binder == (DeleteMemberBinder)null)
-                throw new ArgumentNullException("binder");
-            // </pex>
-            return _members.Remove(binder.Name);
+            _middlewares.Add(middleware);
         }
 
-        /// <summary>
-        /// Provides the implementation for operations that get a value by index. Classes derived from the <see cref="T:System.Dynamic.DynamicObject"/> class can override this method to specify dynamic behavior for indexing operations.
-        /// </summary>
-        /// <param name="binder">Provides information about the operation.</param>
-        /// <param name="indexes">The indexes that are used in the operation. For example, for the sampleObject[3] operation in C# (sampleObject(3) in Visual Basic), where sampleObject is derived from the DynamicObject class, <paramref name="indexes"/> is equal to 3.</param>
-        /// <param name="result">The result of the index operation.</param>
-        /// <returns>
-        /// Alwasy returns true.
-        /// </returns>
-        public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
+        public Task Router(RaxRequest request, RaxResponse response, RaxNext next)
         {
-            if (indexes.Length == 1)
-            {
-                result = ((IDictionary<string, object>)this)[(string)indexes[0]];
-                return true;
-            }
-            result = (object)null;
-            return true;
+            var tcs = new TaskCompletionSource<object>();
+
+            var enumerator = _routes.GetEnumerator();
+
+            Action<Exception> innerNext = null;
+            innerNext = exception =>
+                   {
+                       if (exception != null)
+                       {
+                           next(exception);
+                           tcs.TrySetResult(null);
+                           return;
+                       }
+
+                       if (enumerator.MoveNext())
+                       {
+                           enumerator.Current(request, response, innerNext)
+                               .ContinueWith(t =>
+                                             {
+                                                 if (t.IsFaulted) tcs.TrySetException(t.Exception);
+                                                 else if (t.IsCanceled) tcs.TrySetCanceled();
+                                                 else innerNext(null);
+                                             });
+                       }
+                       else
+                       {
+                           next(null);
+                           //tcs.TrySetException(new ApplicationException("Route not handled by router for " + request["Path"]));
+                       }
+                   };
+
+            innerNext(null);
+            return tcs.Task;
         }
 
-        /// <summary>
-        /// Provides the implementation for operations that get member values. Classes derived from the <see cref="T:System.Dynamic.DynamicObject"/> class can override this method to specify dynamic behavior for operations such as getting a value for a property.
-        /// </summary>
-        /// <param name="binder">Provides information about the object that called the dynamic operation. The binder.Name property provides the name of the member on which the dynamic operation is performed. For example, for the Console.WriteLine(sampleObject.SampleProperty) statement, where sampleObject is an instance of the class derived from the <see cref="T:System.Dynamic.DynamicObject"/> class, binder.Name returns "SampleProperty". The binder.IgnoreCase property specifies whether the member name is case-sensitive.</param>
-        /// <param name="result">The result of the get operation. For example, if the method is called for a property, you can assign the property value to <paramref name="result"/>.</param>
-        /// <returns>
-        /// Alwasy returns true.
-        /// </returns>
-        public override bool TryGetMember(GetMemberBinder binder, out object result)
+        private void All(string method, string path, Func<Request, Response, RaxNext, Task> body)
         {
-            object value;
-            if (_members.TryGetValue(binder.Name, out value))
-            {
-                result = value;
-                return true;
-            }
-            result = (object)null;
-            return true;
+            if (body == null) throw new ArgumentNullException("body");
+
+            _routes.Add((raxRequest, raxResponse, next) =>
+                             {
+                                 var tcs = new TaskCompletionSource<object>();
+
+                                 try
+                                 {
+                                     var req = (Request)raxRequest;
+                                     var res = (Response)raxResponse;
+
+                                     if (req.Method == method && req.Path == path)
+                                     {
+
+                                         body(req, res, next)
+                                             .ContinueWith(t =>
+                                                           {
+                                                               if (t.IsFaulted) tcs.TrySetException(t.Exception);
+                                                               else if (t.IsCanceled) tcs.TrySetCanceled();
+                                                               else tcs.TrySetResult(null);
+                                                           });
+                                     }
+                                     else
+                                     {
+                                         next(null);
+                                         tcs.TrySetResult(null);
+                                     }
+                                 }
+                                 catch (Exception ex)
+                                 {
+                                     tcs.TrySetException(ex);
+                                 }
+
+                                 return tcs.Task;
+                             });
+
         }
 
-        /// <summary>
-        /// Provides the implementation for operations that set a value by index. Classes derived from the <see cref="T:System.Dynamic.DynamicObject"/> class can override this method to specify dynamic behavior for operations that access objects by a specified index.
-        /// </summary>
-        /// <param name="binder">Provides information about the operation.</param>
-        /// <param name="indexes">The indexes that are used in the operation. For example, for the sampleObject[3] = 10 operation in C# (sampleObject(3) = 10 in Visual Basic), where sampleObject is derived from the <see cref="T:System.Dynamic.DynamicObject"/> class, <paramref name="indexes"/> is equal to 3.</param>
-        /// <param name="value">The value to set to the object that has the specified index. For example, for the sampleObject[3] = 10 operation in C# (sampleObject(3) = 10 in Visual Basic), where sampleObject is derived from the <see cref="T:System.Dynamic.DynamicObject"/> class, <paramref name="value"/> is equal to 10.</param>
-        /// <returns>
-        /// true if the operation is successful; otherwise, false. If this method returns false, the run-time binder of the language determines the behavior. (In most cases, a language-specific run-time exception is thrown.
-        /// </returns>
-        public override bool TrySetIndex(SetIndexBinder binder, object[] indexes, object value)
+        private void All(string method, string path, Action<Request, Response, RaxNext> body)
         {
-            if (indexes.Length == 1)
-            {
-                ((IDictionary<string, object>)this)[(string)indexes[0]] = value;
-                return true;
-            }
+            if (body == null) throw new ArgumentNullException("body");
 
-            return base.TrySetIndex(binder, indexes, value);
+            Func<Request, Response, RaxNext, Task> asyncBody =
+                (req, res, next) =>
+                {
+                    var tcs = new TaskCompletionSource<object>();
+                    try
+                    {
+                        body(req, res, next);
+                    }
+                    catch (Exception ex)
+                    {
+                        tcs.TrySetException(ex);
+                    }
+
+                    return tcs.Task;
+                };
+
+            All(method, path, asyncBody);
         }
 
-        /// <summary>
-        /// Provides the implementation for operations that set member values. Classes derived from the <see cref="T:System.Dynamic.DynamicObject"/> class can override this method to specify dynamic behavior for operations such as setting a value for a property.
-        /// </summary>
-        /// <param name="binder">Provides information about the object that called the dynamic operation. The binder.Name property provides the name of the member to which the value is being assigned. For example, for the statement sampleObject.SampleProperty = "Test", where sampleObject is an instance of the class derived from the <see cref="T:System.Dynamic.DynamicObject"/> class, binder.Name returns "SampleProperty". The binder.IgnoreCase property specifies whether the member name is case-sensitive.</param>
-        /// <param name="value">The value to set to the member. For example, for sampleObject.SampleProperty = "Test", where sampleObject is an instance of the class derived from the <see cref="T:System.Dynamic.DynamicObject"/> class, the <paramref name="value"/> is "Test".</param>
-        /// <returns>
-        /// true if the operation is successful; otherwise, false. If this method returns false, the run-time binder of the language determines the behavior. (In most cases, a language-specific run-time exception is thrown.)
-        /// </returns>
-        public override bool TrySetMember(SetMemberBinder binder, object value)
+        public void Get(string path, Func<Request, Response, RaxNext, Task> body)
         {
-            // <pex>
-            if (binder == (SetMemberBinder)null)
-                throw new ArgumentNullException("binder");
-            // </pex>
-            _members[binder.Name] = value;
-            return true;
+            All("GET", path, body);
         }
 
-        /// <summary>
-        /// Returns the enumeration of all dynamic member names.
-        /// </summary>
-        /// <returns>
-        /// A sequence that contains dynamic member names.
-        /// </returns>
-        public override IEnumerable<string> GetDynamicMemberNames()
+        public void Get(string path, Action<Request, Response, RaxNext> body)
         {
-            foreach (var key in Keys)
-                yield return key;
+            All("GET", path, body);
         }
-#endif
     }
 
 }

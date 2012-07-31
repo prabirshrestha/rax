@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{3A1078ED-ECFA-4625-934A-450F161E2004}</ProjectGuid>
+    <ProjectGuid>{42609139-5D13-4B1C-AABD-889B55E5DFEA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Rax.Providers.RaxSampleProviderApp</RootNamespace>
-    <AssemblyName>Rax.Providers.RaxSampleProviderApp</AssemblyName>
+    <RootNamespace>ActualRaxApp</RootNamespace>
+    <AssemblyName>ActualRaxApp</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -40,12 +40,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DynamicArray.cs" />
-    <Compile Include="DynamicObject.cs" />
-    <Compile Include="RaxSampleProviderApp.cs" />
+    <Compile Include="SampleApp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Request.cs" />
-    <Compile Include="Response.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Rax.Middlewares.Favicon\Rax.Middlewares.Favicon.csproj">
+      <Project>{BC2E7DE0-2122-43A2-AF2E-6DA62B8B33DC}</Project>
+      <Name>Rax.Middlewares.Favicon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Rax.Providers.RaxSampleProviderApp\Rax.Providers.RaxSampleProviderApp.csproj">
+      <Project>{3A1078ED-ECFA-4625-934A-450F161E2004}</Project>
+      <Name>Rax.Providers.RaxSampleProviderApp</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
