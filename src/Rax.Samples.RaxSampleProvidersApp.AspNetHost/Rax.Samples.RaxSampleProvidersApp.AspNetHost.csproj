@@ -76,6 +76,10 @@
       <Project>{B32A7B5A-253C-438F-A8BE-61724AA1A010}</Project>
       <Name>Rax.Hosts.AspNet</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Rax.Middlewares.Favicon\Rax.Middlewares.Favicon.csproj">
+      <Project>{BC2E7DE0-2122-43A2-AF2E-6DA62B8B33DC}</Project>
+      <Name>Rax.Middlewares.Favicon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Rax.Providers.RaxSampleProviderApp\Rax.Providers.RaxSampleProviderApp.csproj">
       <Project>{3A1078ED-ECFA-4625-934A-450F161E2004}</Project>
       <Name>Rax.Providers.RaxSampleProviderApp</Name>
