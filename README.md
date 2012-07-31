@@ -6,6 +6,8 @@ the web interface problems in .net. More info can be found at http://owin.org/
 
 There are some limitation in the current owin draft 7, so rax is was the result of it. 
 
+**This is just a proof of concept and is not complete. Performance tuning has been left out for now.**
+
 # Spec
 
 ```csharp
