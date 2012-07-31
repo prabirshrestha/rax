@@ -77,3 +77,9 @@ public class Global : System.Web.HttpApplication
 ```
 
 This of `RaxSampleProviderApp` as a web framework (Gate/NancyFx/Simple.Web/ASP.NET MVC)
+
+`RaxAspNetHost = RaxHost` so you can change this to self host/wcf/asp.net/mono xps. (currently only asp.net host is provided)
+`RaxSampleProviderApp = IEnumerable<RaxMiddleware>` this of this as web frameworks - Gate/NancyFx/Simple.Web/ASP.NET MVC
+`new Favicon("/public/favicon.ico").Middleware = RaxMiddleware`
+`app.Router = RaxMiddleware` provided by RaxSampleProviderApp
+
