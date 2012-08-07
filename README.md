@@ -4,7 +4,7 @@ Web Interface for .NET
 This project does not compete with OWIN but rather is a my playground to check if OWIN/rax features are enough to solve
 the web interface problems in .net. More info can be found at http://owin.org/
 
-There are some limitation in the current owin draft 7, so rax is was the result of it. 
+There are some limitation in the current owin draft 7, so rax is the result of it. 
 
 **This is just a proof of concept and is not complete. Performance tuning has been left out for now.**
 
